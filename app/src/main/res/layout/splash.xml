@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <Button
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="MVVM"
+            android:id="@+id/MVVM"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <Button
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="ANDROID MVVM"
+            android:id="@+id/ANDROID_MVVM"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <Button
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="MVC"
+            android:id="@+id/MVC"
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+</LinearLayout>

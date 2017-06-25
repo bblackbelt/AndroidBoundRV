@@ -1,0 +1,35 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="MainActivityTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabBackground">?attr/colorAccent</item>
+        <item name="tabTextAppearance">@style/MainActivityTabLayout.TabTextAppearance</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabGravity">fill</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabMaxWidth">0dp</item>
+    </style>
+
+    <style name="MainActivityTabLayout.TabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">16dp</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
+
+    <style name="DefaultCardItemStyle" parent="CardView">
+        <item name="android:foreground">@drawable/poster_foreground</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+    </style>
+
+</resources>

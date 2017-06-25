@@ -1,0 +1,57 @@
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+                name="movieViewModel"
+                type="com.blackbelt.androidboundrv.view.androidmvvm.viewmodel.AndroidMovieViewModel" />
+    </data>
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:fresco="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:orientation="vertical"
+            android:layout_marginBottom="@dimen/default_margin"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <android.support.v7.widget.CardView
+                style="@style/DefaultCardItemStyle"
+                fresco:cardPreventCornerOverlap="false"
+                fresco:cardCornerRadius="2dp"
+                fresco:cardUseCompatPadding="true"
+                fresco:cardElevation="5dp"
+                android:id="@+id/item_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <com.blackbelt.androidboundrv.misc.bindables.BindablePicassoImageView
+                    app:imageUrl="@{movieViewModel.getPosterUrl()}"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/item_poster"
+                    android:layout_gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:ignore="MissingPrefix" />
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+                android:gravity="left"
+                android:paddingLeft="@dimen/default_margin"
+                android:text="@{movieViewModel.title}"
+                app:customFont="@{`light`}"
+                android:id="@+id/item_title"
+                tools:text="I am the subtitle"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="MissingPrefix" />
+
+    </LinearLayout>
+
+
+</layout>

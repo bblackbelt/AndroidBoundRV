@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <com.blackbelt.androidboundrv.misc.bindables.BindableSwipeRefreshLayout
+            binding="{Refreshing = SwipeRefreshing}; {RefreshListener @= RefreshListener };"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+        <solutions.alterego.androidbound.android.ui.BindableRecyclerView
+                android:id="@+id/paginated_recycler_view"
+                binding="{Items @+ PaginatedItems};
+                    { PageDescriptor @= PageDescriptor };
+                    { NextPage =@ LoadNextPage };
+                    { OnItemClickListener @= ItemClicked }"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+    </com.blackbelt.androidboundrv.misc.bindables.BindableSwipeRefreshLayout>
+
+
+    <FrameLayout
+            android:id="@android:id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+</RelativeLayout>
