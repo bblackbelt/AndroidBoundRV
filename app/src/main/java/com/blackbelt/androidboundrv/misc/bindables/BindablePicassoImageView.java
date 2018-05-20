@@ -5,11 +5,13 @@ import com.blackbelt.androidboundrv.api.model.Image;
 import com.blackbelt.androidboundrv.manager.MoviesManager;
 import com.blackbelt.androidboundrv.view.gallery.viewmodel.ImageViewModel;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoProvider;
 import com.squareup.picasso.RequestCreator;
 import com.squareup.picasso.Target;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.databinding.BindingAdapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,11 +25,9 @@ import android.util.AttributeSet;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
 
-import lombok.experimental.Accessors;
 import solutions.alterego.androidbound.android.ui.BindableImageView;
 
 
-@Accessors(prefix = "m")
 public class BindablePicassoImageView extends BindableImageView implements ViewTreeObserver.OnGlobalLayoutListener {
 
     private String url;
@@ -49,8 +49,7 @@ public class BindablePicassoImageView extends BindableImageView implements ViewT
         }
 
         @Override
-        public void onBitmapFailed(Drawable errorDrawable) {
-
+        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
         }
 
         @Override
@@ -101,7 +100,8 @@ public class BindablePicassoImageView extends BindableImageView implements ViewT
             } catch (Exception e) {
             }
         }
-        RequestCreator requestCreator = Picasso.with(getContext())
+
+        RequestCreator requestCreator = Picasso.get()
                 .load(value)
                 .placeholder(placeholder);
 
@@ -261,5 +261,10 @@ public class BindablePicassoImageView extends BindableImageView implements ViewT
 
     public ImageViewModel getImageSource() {
         return null;
+    }
+
+    @BindingAdapter("imageUrl")
+    public static void setImage(BindableImageView i, String url) {
+        i.setSource(url);
     }
 }

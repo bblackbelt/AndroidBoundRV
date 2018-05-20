@@ -3,7 +3,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-    <solutions.alterego.androidbound.android.ui.BindableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+    <solutions.alterego.androidbound.support.android.ui.BindableRecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
             itemTemplate="@layout/activity_gallery_thumb"
             binding=" { LayoutManager @= LayoutManager }; { ItemsSource @= ImageViewModelList }; "
             android:layout_gravity="center"

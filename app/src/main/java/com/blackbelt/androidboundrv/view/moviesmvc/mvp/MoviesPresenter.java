@@ -9,23 +9,26 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
-@Accessors(prefix = "m")
 public class MoviesPresenter extends PaginatedPresenterImpl<SimpleBindableItem, MovieViewModel> {
 
-    @Setter
     private boolean mIsMovie;
 
     private MoviesManager mMoviesManager;
 
-    @Setter
     private PaginatedView<MovieViewModel> mView;
 
     @Inject
     public MoviesPresenter(MoviesManager moviesManager) {
         mMoviesManager = moviesManager;
+    }
+
+    public void setView( PaginatedView<MovieViewModel> view) {
+        mView = view;
+    }
+
+    public void setMovie(boolean movie) {
+        this.mIsMovie = movie;
     }
 
     @Override

@@ -3,14 +3,10 @@ package com.blackbelt.androidboundrv.view.gallery.viewmodel;
 import com.blackbelt.androidboundrv.api.model.Image;
 import com.blackbelt.androidboundrv.manager.MoviesManager;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import solutions.alterego.androidbound.ViewModel;
 
-@Accessors(prefix = "m")
 public class ImageViewModel extends ViewModel {
 
-    @Getter
     private Image mImage;
 
     private MoviesManager mMoviesManager;
@@ -21,6 +17,9 @@ public class ImageViewModel extends ViewModel {
     }
 
     public String getImageUrl() {
+        if (mImage == null) {
+            return null;
+        }
         if (mImage.getAspectRatio() > 1) {
             return mMoviesManager.getBackdrop(mImage.getFilePath(), mImage.getWidth());
         }
@@ -29,5 +28,9 @@ public class ImageViewModel extends ViewModel {
 
     public ImageViewModel getImageViewModel() {
         return this;
+    }
+
+    public Image getImage() {
+        return mImage;
     }
 }

@@ -5,49 +5,38 @@ import com.blackbelt.androidboundrv.R;
 import com.blackbelt.androidboundrv.api.model.PaginatedResponse;
 import com.blackbelt.androidboundrv.api.model.SimpleBindableItem;
 import com.blackbelt.androidboundrv.manager.MoviesManager;
-import com.blackbelt.androidboundrv.misc.bindables.android.AndroidBaseItemBinder;
-import com.blackbelt.androidboundrv.misc.bindables.android.AndroidItemBinder;
+import com.blackbelt.bindings.recyclerviewbindings.AndroidItemBinder;
 
 import android.os.Bundle;
 import android.view.View;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Accessors(prefix = "m")
 public class AndroidMoviesViewModel extends PaginatedAndroidViewModel<SimpleBindableItem, AndroidMovieViewModel> {
 
     private MoviesManager mMoviesManager;
 
-    @Setter
     private boolean mIsMovie;
 
     @Inject
     public AndroidMoviesViewModel(MoviesManager moviesManager) {
         mMoviesManager = moviesManager;
+        setNextPage(mPageDescriptor);
+    }
+
+    public void setMovie(boolean movie) {
+        mIsMovie = movie;
     }
 
     @Override
-    public void create(Bundle savedInstanceState) {
-        super.create(savedInstanceState);
-        notifyPropertyChanged(BR.pageDescriptor);
-    }
-
-    @Override
-    protected ObservableTransformer<SimpleBindableItem, AndroidMovieViewModel> getComposer() {
+    protected ObservableTransformer<SimpleBindableItem, AndroidMovieViewModel> getTransformer() {
         return movieObservable -> movieObservable.map(movie -> new AndroidMovieViewModel(movie, mMoviesManager));
-    }
-
-    @Override
-    public void logException(Throwable throwable) {
-
     }
 
     @Override
@@ -58,15 +47,14 @@ public class AndroidMoviesViewModel extends PaginatedAndroidViewModel<SimpleBind
         return mMoviesManager.loadTvShows(page);
     }
 
-    public Map<Class, AndroidItemBinder<?>> getMoviesViewBinder() {
-        Map<Class, AndroidItemBinder<?>> binders = new HashMap<>();
-        binders.put(AndroidMovieViewModel.class,
-                new AndroidBaseItemBinder<AndroidMovieViewModel>(R.layout.android_poster_item, BR.movieViewModel));
-        return binders;
+    @Override
+    public void handleItemClicked(Object item) {
     }
 
-    @Override
-    public void doItemClicked(View view, AndroidMovieViewModel item) {
-
+    public Map<Class<?>, AndroidItemBinder> getMoviesViewBinder() {
+        Map<Class<?>, AndroidItemBinder> binders = new HashMap<>();
+        binders.put(AndroidMovieViewModel.class,
+                new AndroidItemBinder(R.layout.android_poster_item, BR.movieViewModel));
+        return binders;
     }
 }

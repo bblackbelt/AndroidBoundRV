@@ -16,19 +16,14 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import solutions.alterego.androidbound.ViewModel;
+import solutions.alterego.androidbound.android.AndroidViewModel;
 
-@Accessors(prefix = "m")
-public class GalleryViewModel extends ViewModel {
+public class GalleryViewModel extends AndroidViewModel {
 
     private MoviesManager mMoviesManager;
 
-    @Getter
     List<Image> mImages;
 
-    @Getter
     List<ImageViewModel> mImageViewModelList = new ArrayList<>();
 
     private Disposable mImagesDisposable = Disposables.disposed();
@@ -70,6 +65,10 @@ public class GalleryViewModel extends ViewModel {
                     raisePropertyChanged("ImageViewModelList");
 
                 }, Throwable::printStackTrace);
+    }
+
+    public List<ImageViewModel> getImageViewModelList() {
+        return mImageViewModelList;
     }
 
     public RecyclerView.LayoutManager getLayoutManager() {

@@ -1,12 +1,15 @@
 package com.blackbelt.androidboundrv.view.androidmvvm.viewmodel;
 
-import com.blackbelt.androidboundrv.BR;
-import com.blackbelt.androidboundrv.api.model.PaginatedResponse;
 
 import android.databinding.Bindable;
-import android.databinding.ObservableArrayList;
-import android.databinding.ObservableList;
-import android.view.View;
+import android.support.v7.widget.LinearSnapHelper;
+import android.support.v7.widget.SnapHelper;
+
+import com.blackbelt.androidboundrv.BR;
+import com.blackbelt.androidboundrv.api.model.PaginatedResponse;
+import com.blackbelt.bindings.recyclerviewbindings.ItemClickListener;
+import com.blackbelt.bindings.recyclerviewbindings.PageDescriptor;
+import com.blackbelt.bindings.viewmodel.BaseViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,119 +19,143 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import solutions.alterego.androidbound.android.adapters.PageDescriptor;
 
-@Accessors(prefix = "m")
-public abstract class PaginatedAndroidViewModel<T, R> extends AndroidBaseViewModel {
+public abstract class PaginatedAndroidViewModel<T, V> extends BaseViewModel {
 
-    @Getter
-    public PageDescriptor mLoadNextPage;
+    protected PageDescriptor mPageDescriptor;
 
-    @Getter
-    private List<T> mModelList = new ArrayList<>();
+    private boolean mFirstLoading;
 
-    private ObservableList<R> mPaginatedItems = new ObservableArrayList<>();
+    protected boolean mLoading;
 
-    @Getter
-    private PaginatedResponse<T> mCurrentPage;
+    protected Disposable mCurrentPageDisposable = Disposables.disposed();
 
-    @Getter
-    private boolean mSwipeRefreshing = true;
+    protected final List<Object> mPaginatedItems = new ArrayList<>();
 
-    @Getter
-    private boolean mRefresh;
+    protected LinearSnapHelper mSnapHelper;
 
-    protected int pageLoaded = 0;
-
-    protected Disposable mDisposable = Disposables.disposed();
-
-    protected abstract ObservableTransformer<T, R> getComposer();
-
-    protected void onNext(R v) {
-        if (!mPaginatedItems.contains(v)) {
-            mPaginatedItems.add(v);
-        }
-    }
-
-    protected boolean isEmpty() {
-        return mModelList == null || mModelList.isEmpty();
-    }
-
-    public void setPageDescriptor(PageDescriptor pageDescriptor) {
-        if (pageDescriptor == null) {
-            return;
-        }
-        int page = pageDescriptor.getCurrentPage() == 0 ? pageDescriptor.getStartPage()
-                : pageDescriptor.getCurrentPage();
-        boolean lastPage = mCurrentPage != null && mCurrentPage.getTotalPages() == pageLoaded;
-        if (page > pageLoaded) {
-            pageLoaded = page;
-            setSwipeRefreshing(true);
-            mDisposable.dispose();
-            mDisposable = Observable.just(page)
-                    .filter(pageNo -> pageNo > 0 && mModelList.size() / 20 < pageNo && !lastPage)
-                    .flatMap(this::loadFrom)
-                    .flatMap(tPaginatedResponse -> {
-                        mCurrentPage = tPaginatedResponse;
-                        mModelList.addAll(tPaginatedResponse.getResults());
-                        return Observable.fromIterable(tPaginatedResponse.getResults());
-                    })
-                    .compose(getComposer())
-                    .subscribe(moviePaginatedResponse -> {
-                        mPaginatedItems.add(moviePaginatedResponse);
-                    }, throwable -> {
-                        setSwipeRefreshing(false);
-                        logException(throwable);
-                    }, this::notifyChanges);
-        }
-    }
-
-    public abstract void logException(Throwable throwable);
-
-    protected void notifyChanges() {
-        AndroidSchedulers.mainThread().createWorker().schedule(() -> {
-            notifyPropertyChanged(BR.paginatedItems);
-            setSwipeRefreshing(false);
-        });
+    public PaginatedAndroidViewModel() {
+        mPageDescriptor =
+                com.blackbelt.bindings.recyclerviewbindings.PageDescriptor.PageDescriptorBuilder
+                        .build();
     }
 
     @Bindable
-    public List<R> getPaginatedItems() {
+    public void setNextPage(PageDescriptor pageDescriptor) {
+        if (pageDescriptor != null) {
+            if (pageDescriptor.getCurrentPage() == 1) {
+                setFirstLoading(true);
+            } else {
+                setLoading(true);
+            }
+            mCurrentPageDisposable.dispose();
+            mCurrentPageDisposable = Observable.just(pageDescriptor.getCurrentPage())
+                    .flatMap(this::loadFrom)
+                    .compose(transformOriginal())
+                    .filter(this::isDataValid)
+                    .flatMap(response -> Observable.fromIterable(response.getResults()))
+                    .compose(getTransformer())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::add,
+                            this::notifyError,
+                            this::notifyChanges);
+        }
+    }
+
+
+    protected void notifyChanges() {
+        setLoading(false);
+        setFirstLoading(false);
+        notifyResultsLoaded();
+    }
+
+    protected void notifyError(Throwable throwable) {
+        throwable.printStackTrace();
+        setLoading(false);
+        setFirstLoading(false);
+    }
+
+    protected void notifyResultsLoaded() {
+        notifyPropertyChanged(BR.paginatedItems);
+        notifyPropertyChanged(BR.paginatedItemsVisible);
+    }
+
+    @Bindable
+    public List<Object> getPaginatedItems() {
         return mPaginatedItems;
     }
 
-    public void setSwipeRefreshing(boolean isRefreshing) {
-        mSwipeRefreshing = isRefreshing;
-        //raisePropertyChanged("SwipeRefreshing");
-        //raisePropertyChanged("EmptyViewModel");
+    @Bindable
+    public boolean isPaginatedItemsVisible() {
+        return true;
     }
 
-    public abstract Observable<? extends PaginatedResponse<T>> loadFrom(int page);
+    protected void setFirstLoading(boolean firstLoading) {
+        mFirstLoading = firstLoading;
 
-    public void destroy() {
-        mDisposable.dispose();
     }
 
-    private PageDescriptor buildNewPageDescriptor(int page) {
-        mLoadNextPage = new PageDescriptor.PageDescriptorBuilder()
-                .setPageSize(20)
-                .setStartPage(page)
-                .setThreshold(5).build();
-        return mLoadNextPage;
+    public void setLoading(boolean loading) {
+        this.mLoading = loading;
+        notifyPropertyChanged(BR.loading);
+    }
+
+    protected void add(V item) {
+        mPaginatedItems.add(item);
+    }
+
+    protected boolean isDataValid(PaginatedResponse<T> dataValid) {
+        return dataValid != null;
+    }
+
+    protected boolean isInternalLoading() {
+        return isLoading() || isFirstLoading();
     }
 
     @Bindable
-    public PageDescriptor getPageDescriptor() {
-        if (mLoadNextPage == null) {
-            mLoadNextPage = new PageDescriptor.PageDescriptorBuilder()
-                    .setPageSize(20)
-                    .setStartPage(1)
-                    .setThreshold(5).build();
-        }
-        return mLoadNextPage;
+    public boolean isLoading() {
+        return mLoading;
     }
 
-    public abstract void doItemClicked(View view, R item);
+    @Bindable
+    public boolean isFirstLoading() {
+        return mFirstLoading;
+    }
+
+    @Bindable
+    public PageDescriptor getNextPage() {
+        return mPageDescriptor;
+    }
+
+
+    protected ObservableTransformer<T, V> getTransformer() {
+        return upstream -> Observable.empty();
+    }
+
+    protected ObservableTransformer<PaginatedResponse<T>, PaginatedResponse<T>> transformOriginal() {
+        return paginatedResponseObservable -> paginatedResponseObservable;
+    }
+
+    protected abstract Observable<? extends PaginatedResponse<T>> loadFrom(int page);
+
+    public abstract void handleItemClicked(Object item);
+
+    public ItemClickListener getItemClickListener() {
+        return ((view, item) -> {
+            handleItemClicked(item);
+        });
+    }
+
+    public SnapHelper getSnapHelper() {
+        if (mSnapHelper == null) {
+            mSnapHelper = new LinearSnapHelper();
+        }
+        return mSnapHelper;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCurrentPageDisposable.dispose();
+    }
 }

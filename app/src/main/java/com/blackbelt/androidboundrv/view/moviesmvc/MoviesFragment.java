@@ -8,6 +8,7 @@ import com.blackbelt.androidboundrv.view.moviesmvc.adapter.MoviesRecyclerViewAda
 import com.blackbelt.androidboundrv.view.moviesmvc.mvp.MoviesPresenter;
 import com.blackbelt.androidboundrv.view.moviesmvc.mvp.MoviesView;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,27 +25,19 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import dagger.android.support.AndroidSupportInjection;
 import solutions.alterego.androidbound.android.adapters.PageDescriptor;
 
 public class MoviesFragment extends Fragment implements MoviesView {
 
-    @Accessors(prefix = "m")
     private final class PageScrollListener extends RecyclerView.OnScrollListener {
 
         private int[] mVisiblePosition;
 
-        @Getter
-        @Setter
+
         private PageDescriptor mPageDescriptor;
 
-        @Getter
-        @Setter
+
         private int mPage = 1;
 
 
@@ -85,12 +78,8 @@ public class MoviesFragment extends Fragment implements MoviesView {
 
     }
 
-    private Unbinder mUnbinder;
-
-    @BindView(R.id.paginated_recycler_view)
     RecyclerView mRecyclerView;
 
-    @BindView(R.id.swipe_refresh_layout)
     SwipeRefreshLayout mSwipeRefreshLayout;
 
     private MoviesRecyclerViewAdapter mMoviesAdapter;
@@ -101,9 +90,14 @@ public class MoviesFragment extends Fragment implements MoviesView {
     MoviesPresenter mMoviesPresenter;
 
     @Override
+    public void onAttach(Context context) {
+        AndroidSupportInjection.inject(this);
+        super.onAttach(context);
+    }
+
+    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        App.getComponent().inject(this);
         mMoviesPresenter.setView(this);
         mMoviesPresenter.setMovie(getArguments().getBoolean("movies"));
     }
@@ -117,7 +111,8 @@ public class MoviesFragment extends Fragment implements MoviesView {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mUnbinder = ButterKnife.bind(this, view);
+        mRecyclerView = view.findViewById(R.id.paginated_recycler_view);
+        mSwipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout);
         mRecyclerView.addOnScrollListener(mPageScrollListener
                 = new PageScrollListener(new PageDescriptor.PageDescriptorBuilder().build()));
         mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), MoviesManager.ITEMS_PER_ROW));
@@ -129,9 +124,6 @@ public class MoviesFragment extends Fragment implements MoviesView {
     public void onDestroy() {
         super.onDestroy();
         mRecyclerView.removeOnScrollListener(mPageScrollListener);
-        if (mUnbinder != null) {
-            mUnbinder.unbind();
-        }
         mMoviesPresenter.onDestroy();
     }
 

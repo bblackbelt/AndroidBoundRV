@@ -2,9 +2,11 @@ package com.blackbelt.androidboundrv.api.model;
 
 public interface SimpleBindableItem {
 
-    String getTitle();
+    int getShowId();
 
-    String getPosterPath();
+    String getShowTitle();
 
-    String getBackdropPath();
+    String getShowPosterPath();
+
+    String getShowBackdropPath();
 }

@@ -16,23 +16,22 @@ import android.view.View;
 import javax.inject.Inject;
 
 import io.reactivex.ObservableTransformer;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import io.reactivex.Observable;
 
-
-@Accessors(prefix = "m")
 public class MoviesViewModel extends PaginatedViewModel<SimpleBindableItem, MovieViewModel> {
 
     private MoviesManager mMoviesManager;
 
-    @Setter
     private boolean mIsMovie;
 
     @Inject
     public MoviesViewModel(MoviesManager moviesManager) {
         mMoviesManager = moviesManager;
         raisePropertyChanged("PageDescriptor");
+    }
+
+    public void setMovie(boolean m) {
+        mIsMovie = m;
     }
 
     @Override
@@ -71,14 +70,14 @@ public class MoviesViewModel extends PaginatedViewModel<SimpleBindableItem, Movi
     @Override
     public void doItemClicked(View view, MovieViewModel item) {
         Intent intent = new Intent(getParentActivity(), GalleryActivity.class);
-        intent.putExtra("id", ((Movie) item.getMovie()).getId());
+        intent.putExtra("id", ((Movie) item.getMovie()).getShowId());
         intent.putExtra("movie", mIsMovie);
         getParentActivity().startActivity(intent);
     }
 
     public void doItemClicked(MovieViewModel item) {
         Intent intent = new Intent(getParentActivity(), GalleryActivity.class);
-        intent.putExtra("id", ((Movie) item.getMovie()).getId());
+        intent.putExtra("id", ((Movie) item.getMovie()).getShowId());
         intent.putExtra("movie", mIsMovie);
         getParentActivity().startActivity(intent);
     }

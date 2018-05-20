@@ -13,30 +13,21 @@ import io.reactivex.ObservableTransformer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import solutions.alterego.androidbound.ViewModel;
+import solutions.alterego.androidbound.android.AndroidViewModel;
 import solutions.alterego.androidbound.android.adapters.PageDescriptor;
 
-@Accessors(prefix = "m")
-public abstract class PaginatedViewModel<T, R> extends ViewModel {
+public abstract class PaginatedViewModel<T, R> extends AndroidViewModel {
 
-    @Getter
-    public PageDescriptor mLoadNextPage;
+    public PageDescriptor mLoadNextPage = getPageDescriptor();
 
-    @Getter
     private List<T> mModelList = new ArrayList<>();
 
-    @Getter
     private List<R> mPaginatedItems = new ArrayList<>();
 
-    @Getter
     private PaginatedResponse<T> mCurrentPage;
 
-    @Getter
     private boolean mSwipeRefreshing = true;
 
-    @Getter
     private boolean mRefresh;
 
     protected int pageLoaded = 0;
@@ -44,12 +35,6 @@ public abstract class PaginatedViewModel<T, R> extends ViewModel {
     protected Disposable mDisposable = Disposables.disposed();
 
     protected abstract ObservableTransformer<T, R> getComposer();
-
-    protected void onNext(R v) {
-        if (!mPaginatedItems.contains(v)) {
-            mPaginatedItems.add(v);
-        }
-    }
 
     protected boolean isEmpty() {
         return mModelList == null || mModelList.isEmpty();
@@ -59,30 +44,20 @@ public abstract class PaginatedViewModel<T, R> extends ViewModel {
         if (pageDescriptor == null) {
             return;
         }
-        int page = pageDescriptor.getCurrentPage() == 0 ? pageDescriptor.getStartPage()
-                : pageDescriptor.getCurrentPage();
-        boolean lastPage = mCurrentPage != null && mCurrentPage.getTotalPages() == pageLoaded;
-        if (page > pageLoaded) {
-            pageLoaded = page;
-            setSwipeRefreshing(true);
-            mPaginatedItems = new ArrayList<>();
-            mDisposable.dispose();
-            mDisposable = Observable.just(page)
-                    .filter(pageNo -> pageNo > 0 && mModelList.size() / 20 < pageNo && !lastPage)
-                    .flatMap(this::loadFrom)
-                    .flatMap(tPaginatedResponse -> {
-                        mCurrentPage = tPaginatedResponse;
-                        mModelList.addAll(tPaginatedResponse.getResults());
-                        return Observable.fromIterable(tPaginatedResponse.getResults());
-                    })
-                    .compose(getComposer())
-                    .subscribe(moviePaginatedResponse -> {
-                        mPaginatedItems.add(moviePaginatedResponse);
-                    }, throwable -> {
-                        setSwipeRefreshing(false);
-                        logException(throwable);
-                    }, this::notifyChanges);
-        }
+        setSwipeRefreshing(true);
+        mDisposable.dispose();
+        mDisposable = Observable.just(pageDescriptor.getCurrentPage())
+                .flatMap(this::loadFrom)
+                .flatMap(tPaginatedResponse -> Observable.fromIterable(tPaginatedResponse.getResults()))
+                .compose(getComposer())
+                .subscribe(moviePaginatedResponse -> mPaginatedItems.add(moviePaginatedResponse), throwable -> {
+                    setSwipeRefreshing(false);
+                    logException(throwable);
+                }, this::notifyChanges);
+    }
+
+    public PageDescriptor getLoadNextPage() {
+        return mLoadNextPage;
     }
 
     public abstract void logException(Throwable throwable);
@@ -98,6 +73,10 @@ public abstract class PaginatedViewModel<T, R> extends ViewModel {
         mSwipeRefreshing = isRefreshing;
         raisePropertyChanged("SwipeRefreshing");
         raisePropertyChanged("EmptyViewModel");
+    }
+
+    public List<R> getPaginatedItems() {
+        return mPaginatedItems;
     }
 
     public abstract Observable<? extends PaginatedResponse<T>> loadFrom(int page);

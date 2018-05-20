@@ -5,16 +5,8 @@ import com.blackbelt.androidboundrv.manager.MoviesManager;
 
 import android.databinding.BaseObservable;
 
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-
-@Accessors(prefix = "m")
-@ToString
 public class AndroidMovieViewModel extends BaseObservable {
 
-
-    @Getter
     private SimpleBindableItem mMovie;
 
     private MoviesManager mMoviesManager;
@@ -25,15 +17,15 @@ public class AndroidMovieViewModel extends BaseObservable {
     }
 
     public String getBackdropPath() {
-        return mMoviesManager.getBackdrop(mMovie.getBackdropPath());
+        return mMoviesManager.getBackdrop(mMovie.getShowBackdropPath());
     }
 
     public String getPosterUrl() {
-        return mMoviesManager.getPoster(mMovie.getPosterPath(), 200);
+        return mMoviesManager.getPoster(mMovie.getShowPosterPath(), 200);
     }
 
     public String getTitle() {
-        return mMovie.getTitle();
+        return mMovie.getShowTitle();
     }
 }
 

@@ -9,9 +9,7 @@ import android.util.SparseArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.experimental.Accessors;
 
-@Accessors(prefix = "m")
 public class GalleryLayoutManager extends GridLayoutManager {
 
     private float mMinAspectRatio = 1.6f;

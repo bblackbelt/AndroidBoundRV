@@ -3,16 +3,10 @@ package com.blackbelt.androidboundrv.view.movies.viewmodel;
 import com.blackbelt.androidboundrv.api.model.SimpleBindableItem;
 import com.blackbelt.androidboundrv.manager.MoviesManager;
 
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
 import solutions.alterego.androidbound.ViewModel;
 
-@Accessors(prefix = "m")
-@ToString
 public class MovieViewModel extends ViewModel {
 
-    @Getter
     private SimpleBindableItem mMovie;
 
     private MoviesManager mMoviesManager;
@@ -22,15 +16,19 @@ public class MovieViewModel extends ViewModel {
         mMoviesManager = moviesManager;
     }
 
+    public SimpleBindableItem getMovie() {
+        return mMovie;
+    }
+
     public String getBackdropPath() {
-        return mMoviesManager.getBackdrop(mMovie.getBackdropPath());
+        return mMoviesManager.getBackdrop(mMovie.getShowBackdropPath());
     }
 
     public String getPosterUrl() {
-        return mMoviesManager.getPoster(mMovie.getPosterPath(), 200);
+        return mMoviesManager.getPoster(mMovie.getShowPosterPath(), 200);
     }
 
     public String getTitle() {
-        return mMovie.getTitle();
+        return mMovie.getShowTitle();
     }
 }

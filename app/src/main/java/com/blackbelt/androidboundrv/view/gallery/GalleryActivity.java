@@ -1,6 +1,5 @@
 package com.blackbelt.androidboundrv.view.gallery;
 
-import com.blackbelt.androidboundrv.App;
 import com.blackbelt.androidboundrv.R;
 import com.blackbelt.androidboundrv.view.gallery.viewmodel.GalleryViewModel;
 
@@ -11,6 +10,7 @@ import android.view.View;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import solutions.alterego.androidbound.android.BindingActivity;
 import solutions.alterego.androidbound.interfaces.IViewBinder;
 
@@ -24,11 +24,11 @@ public class GalleryActivity extends BindingActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
-        App.getComponent().inject(this);
         setContentView(R.layout.activity_gallery, mGalleryViewModel);
         mGalleryViewModel.loadImages(getIntent().getBooleanExtra("movie", false), getIntent().getIntExtra("id", 0));
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.small_picture_rv);
+        RecyclerView recyclerView = findViewById(R.id.small_picture_rv);
         final int margin = (int) (getResources().getDisplayMetrics().density * 2);
         recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override

@@ -12,16 +12,11 @@ import android.view.ViewGroup;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
-import solutions.alterego.androidbound.android.ui.BindableRecyclerView;
+import solutions.alterego.androidbound.support.android.BindingSupportFragment;
+import solutions.alterego.androidbound.support.android.ui.BindableRecyclerView;
 
-public abstract class PaginatedFragment extends BindableFragment {
+public abstract class PaginatedFragment extends BindingSupportFragment {
 
-    private Unbinder mUnbinder;
-
-    @BindView(R.id.paginated_recycler_view)
     protected BindableRecyclerView mRecyclerView;
 
     @Nullable
@@ -38,7 +33,7 @@ public abstract class PaginatedFragment extends BindableFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mUnbinder = ButterKnife.bind(this, view);
+        mRecyclerView = view.findViewById(R.id.paginated_recycler_view);
         setupPaginatedRecyclerView();
     }
 
@@ -48,14 +43,6 @@ public abstract class PaginatedFragment extends BindableFragment {
         mRecyclerView.setNestedScrollingEnabled(false);
         mRecyclerView.setLayoutManager(getViewModel().getLayoutManager());
         mRecyclerView.setTemplatesForObjects(nowPlayingTemplates);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (mUnbinder != null) {
-            mUnbinder.unbind();
-        }
     }
 
     public abstract PaginatedViewModel getViewModel();

@@ -3,9 +3,7 @@
 
     <data>
 
-        <import type="com.blackbelt.androidboundrv.misc.bindables.android.LayoutManagers" />
-
-        <import type="com.blackbelt.androidboundrv.view.androidmvvm.viewmodel.OnPageChangeListener"/>
+        <import type="com.blackbelt.bindings.recyclerviewbindings.LayoutManagers" />
 
         <variable
                 name="androidMoviesViewModel"
@@ -17,11 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <com.blackbelt.androidboundrv.misc.bindables.android.AndroidClickableBindableRecyclerView
+        <com.blackbelt.bindings.recyclerviewbindings.AndroidBindableRecyclerView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:itemViewBinder="@{androidMoviesViewModel.moviesViewBinder}"
-                app:pageDescriptor="@={androidMoviesViewModel.pageDescriptor}"
+                app:pageDescriptor="@={androidMoviesViewModel.nextPage}"
                 app:items="@{androidMoviesViewModel.paginatedItems}"
                 app:layoutManager="@{LayoutManagers.grid(3)}" />
     </LinearLayout>

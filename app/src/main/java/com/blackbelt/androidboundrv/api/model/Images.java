@@ -4,9 +4,6 @@ import com.google.gson.annotations.Expose;
 
 import java.util.List;
 
-import lombok.Data;
-
-@Data
 public class Images {
 
     @Expose
@@ -15,4 +12,11 @@ public class Images {
     @Expose
     private List<Image> posters;
 
+    public List<Image> getPosters() {
+        return posters;
+    }
+
+    public List<Image> getBackdrops() {
+        return backdrops;
+    }
 }

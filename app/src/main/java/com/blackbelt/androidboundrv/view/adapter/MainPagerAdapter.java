@@ -9,10 +9,7 @@ import android.util.SparseArray;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.experimental.Accessors;
 
-@Accessors(prefix = "m")
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private Activity mActivity;
@@ -21,7 +18,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     private List<FragmentModel> mDataSet;
 
-    @Getter
     private SparseArray<Fragment> mFragmentCache;
 
     public MainPagerAdapter(AppCompatActivity activity, List<FragmentModel> dataSet) {

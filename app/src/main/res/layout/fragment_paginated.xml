@@ -6,15 +6,15 @@
         android:layout_height="wrap_content">
 
     <com.blackbelt.androidboundrv.misc.bindables.BindableSwipeRefreshLayout
-            binding="{Refreshing = SwipeRefreshing}; {RefreshListener @= RefreshListener };"
+            binding="{Refreshing @= SwipeRefreshing}; {RefreshListener @= RefreshListener };"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
 
-        <solutions.alterego.androidbound.android.ui.BindableRecyclerView
+        <solutions.alterego.androidbound.support.android.ui.BindableRecyclerView
                 android:id="@+id/paginated_recycler_view"
-                binding="{Items @+ PaginatedItems};
-                    { PageDescriptor @= PageDescriptor };
+                binding="{ItemsSource @= PaginatedItems};
+                    { PageDescriptor @= LoadNextPage };
                     { NextPage =@ LoadNextPage };
                     { OnItemClickListener @= ItemClicked }"
                 android:layout_width="match_parent"

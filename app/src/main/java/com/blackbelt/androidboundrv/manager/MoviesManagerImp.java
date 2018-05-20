@@ -5,9 +5,8 @@ import com.blackbelt.androidboundrv.api.model.Configuration;
 import com.blackbelt.androidboundrv.api.model.Images;
 import com.blackbelt.androidboundrv.api.model.PaginatedResponse;
 import com.blackbelt.androidboundrv.api.model.SimpleBindableItem;
-import com.blackbelt.androidboundrv.database.MoviesDatabase;
 
-import android.content.Context;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -15,18 +14,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 import io.reactivex.subjects.BehaviorSubject;
 
+@Singleton
 public class MoviesManagerImp implements MoviesManager {
 
     private final ApiManager mApiManager;
 
     private final int screenWidth;
-
-    private final MoviesDatabase mDatabase;
 
     private BehaviorSubject<Configuration> mConfigurationSubject = BehaviorSubject.create();
 
@@ -38,42 +39,25 @@ public class MoviesManagerImp implements MoviesManager {
 
     private Configuration mConfiguration;
 
-    public MoviesManagerImp(ApiManager apiManager, MoviesDatabase database, Context context) {
+    @Inject
+    public MoviesManagerImp(ApiManager apiManager) {
         mApiManager = apiManager;
-        int width = context.getResources().getDisplayMetrics().widthPixels;
-        screenWidth = (int) (width / context.getResources().getDisplayMetrics().density);
-        mDatabase = database;
+        int width = Resources.getSystem().getDisplayMetrics().widthPixels;
+        screenWidth = (int) (width / Resources.getSystem().getDisplayMetrics().density);
         loadConfiguration();
     }
 
     private void loadConfiguration() {
         if (mConfigurationSubscription.isDisposed()) {
-
-            final Observable<Configuration> networkConfiguration =
+            mConfigurationSubscription =
                     mApiManager.getConfiguration()
                             .onErrorReturn(throwable -> Configuration.EMPTY)
-                            .doOnNext(conf -> mDatabase.getConfigurationDao().add(conf));
-
-            mConfigurationSubscription = mDatabase
-                    .getConfigurationDao()
-                    .getConfiguration()
-                    .toObservable()
-                    .map(configurations -> configurations.isEmpty()
-                            ? Configuration.EMPTY
-                            : configurations.get(0))
-                    .flatMap(configuration -> {
-                        if (configuration != Configuration.EMPTY) {
-                            return Observable.just(configuration);
-                        }
-                        return networkConfiguration;
-                    })
-                    .map(object -> object)
-                    .subscribe(configuration -> {
-                        if (!mConfigurationSubject.hasValue()) {
-                            mConfiguration = configuration;
-                            mConfigurationSubject.onNext(configuration);
-                        }
-                    });
+                            .subscribe(configuration -> {
+                                if (!mConfigurationSubject.hasValue()) {
+                                    mConfiguration = configuration;
+                                    mConfigurationSubject.onNext(configuration);
+                                }
+                            });
         }
     }
 

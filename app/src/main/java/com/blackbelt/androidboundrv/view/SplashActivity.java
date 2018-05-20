@@ -1,6 +1,5 @@
 package com.blackbelt.androidboundrv.view;
 
-import com.blackbelt.androidboundrv.App;
 import com.blackbelt.androidboundrv.R;
 import com.blackbelt.androidboundrv.api.model.Configuration;
 import com.blackbelt.androidboundrv.manager.MoviesManager;
@@ -13,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import javax.inject.Inject;
 
+import dagger.android.AndroidInjection;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.disposables.Disposables;
 
@@ -27,9 +27,9 @@ public class SplashActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        AndroidInjection.inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
-        App.getComponent().inject(this);
         findViewById(R.id.MVC)
                 .setOnClickListener(v -> startActivity(MainMVCActivity.class));
 

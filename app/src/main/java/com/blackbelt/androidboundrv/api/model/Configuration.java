@@ -3,21 +3,11 @@ package com.blackbelt.androidboundrv.api.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import android.arch.persistence.room.Embedded;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.Ignore;
-import android.arch.persistence.room.PrimaryKey;
 
 import java.util.List;
 
-import lombok.ToString;
-
-@Entity
-@ToString
 public class Configuration {
 
-    @Entity
-    @ToString
     public static class ImageConfiguration {
 
         public String getBaseUrl() {
@@ -76,7 +66,6 @@ public class Configuration {
             this.stillSizes = stillSizes;
         }
 
-        @Ignore
         public static final ImageConfiguration EMPTY = new ImageConfiguration();
 
         @Expose
@@ -109,11 +98,9 @@ public class Configuration {
 
     }
 
-    @Ignore
     public static final Configuration EMPTY = new Configuration();
 
     @Expose
-    @Embedded
     @SerializedName("images")
     private ImageConfiguration imagesConfiguration;
 
@@ -137,7 +124,6 @@ public class Configuration {
         return changeKeys;
     }
 
-    @PrimaryKey(autoGenerate = true)
     private int key;
 
     public int getKey() {

@@ -42,7 +42,6 @@
                 android:gravity="left"
                 android:paddingLeft="@dimen/default_margin"
                 android:text="@{movieViewModel.title}"
-                app:customFont="@{`light`}"
                 android:id="@+id/item_title"
                 tools:text="I am the subtitle"
                 android:maxLines="2"

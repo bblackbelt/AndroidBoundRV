@@ -1,39 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.retrolambda_version = '3.3.0'
+    ext {
+        kotlin_version = '1.2.40'
+        supportLibVersion = '27.1.1'
+        testrunner_version = '1.0.1'
+        espresso_version = '3.0.1'
+        daggerVersion = "2.13"
+        rxKotlinVersion = "2.1.0"
+        retrofitVersion = "2.3.0"
+        okHttpVersion = "3.8.1"
+    }
     repositories {
+        google()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
-        classpath "me.tatarka:gradle-retrolambda:$retrolambda_version"
-        classpath 'me.tatarka.retrolambda.projectlombok:lombok.ast:0.2.3.a2'
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
-    configurations.classpath.exclude group: 'com.android.tools.external.lombok'
-}
-
-
-plugins {
-    id "me.tatarka.retrolambda" version '3.3.0'
-}
-
-
-ext {
-    supportLibVersion = '25.4.0'
-    butterKnifeVersion = '8.6.0'
-    roomVersion = '1.0.0-alpha3'
-    retrofitVersion = '2.3.0'
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
-        maven {
-            url "https://maven.google.com"
-        }
+        maven { url 'https://jitpack.io' }
+        maven { url "https://github.com/alter-ego/advanced-android-logger/raw/develop/releases/" }
     }
 }
 
